@@ -72,6 +72,19 @@ public class ReservationController {
         return ResponseEntity.ok().body(responses);
     }
 
+    @Operation(summary = "특정 예약 조회 (어드민 권한)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    @RoleRequired(roleType = RoleType.ADMIN)
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponse> findReservationById(
+            @PathVariable("id") Long id
+    ) {
+        ReservationResponse response = reservationService.findReservationById(id);
+        return ResponseEntity.ok().body(response);
+    }
+
     @Operation(summary = "예약 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),

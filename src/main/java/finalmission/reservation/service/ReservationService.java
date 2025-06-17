@@ -61,6 +61,14 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public ReservationResponse findReservationById(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 예약입니다."));
+
+        return ReservationResponse.from(reservation);
+    }
+
     @Transactional
     public void updateReservation(Long reservationId, Long memberId, ReservationUpdateRequest request) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -85,7 +93,7 @@ public class ReservationService {
     }
 
     private void validateOwnReservation(Reservation reservation, Long memberId) {
-        if (reservation.isMine(memberId)) {
+        if (!reservation.isMine(memberId)) {
             throw new ForbiddenException("권한이 없습니다.");
         }
     }
