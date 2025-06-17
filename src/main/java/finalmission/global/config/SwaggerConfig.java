@@ -19,12 +19,14 @@ public class SwaggerConfig {
                         .version("v1")
                         .description("회의실 예약 관련 API 명세서"))
                 .components(new Components()
-                        .addSecuritySchemes("accessToken",
+                        .addSecuritySchemes("Bearer Token",
                                 new SecurityScheme()
-                                        .type(SecurityScheme.Type.APIKEY)
-                                        .in(SecurityScheme.In.HEADER)
-                                        .name("accessToken")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
                         ))
-                .addSecurityItem(new SecurityRequirement().addList("accessToken"));
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("Bearer Token")
+                );
     }
 }
