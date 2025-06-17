@@ -3,6 +3,7 @@ package finalmission.global.auth.interceptor;
 import finalmission.global.auth.annotation.RoleRequired;
 import finalmission.global.auth.util.JwtUtil;
 import finalmission.member.entity.RoleType;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String AUTHORIZATION_PREFIX = "Bearer";
 
     private final JwtUtil jwtUtil;
 
@@ -32,13 +34,15 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = request.getHeader(AUTHORIZATION_HEADER);
-        if (token == null) {
+        String header = request.getHeader(AUTHORIZATION_HEADER);
+        if (header == null || !header.startsWith(AUTHORIZATION_PREFIX)) {
             // TODO: 커스텀 예외로 변경
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
 
-        RoleType requestedRole = jwtUtil.parseToken(token).get("role", RoleType.class);
+        String token = header.substring(7).trim();
+        Claims claims = jwtUtil.parseToken(token);
+        RoleType requestedRole = RoleType.valueOf(claims.get("role", String.class));
         if (Arrays.stream(roleRequired.roleType()).noneMatch(requiredRole -> requiredRole == requestedRole)) {
             // TODO: 커스텀 예외로 변경
             throw new IllegalArgumentException("권한이 없습니다.");

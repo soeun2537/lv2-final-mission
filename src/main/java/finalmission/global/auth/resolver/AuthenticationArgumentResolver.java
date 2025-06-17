@@ -19,6 +19,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String AUTHORIZATION_PREFIX = "Bearer";
 
     private final JwtUtil jwtUtil;
 
@@ -35,21 +36,22 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                   WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
-        String token = request.getHeader(AUTHORIZATION_HEADER);
-        if (token == null) {
+        String header = request.getHeader(AUTHORIZATION_HEADER);
+        if (header == null || !header.startsWith(AUTHORIZATION_PREFIX)) {
             // TODO: 커스텀 예외로 변경
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
 
+        String token = header.substring(7).trim();
         if (!jwtUtil.validateToken(token)) {
             // TODO: 커스텀 예외로 변경
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
 
         Claims claims = jwtUtil.parseToken(token);
-        Long id = claims.get("id", Long.class);
+        Long id = claims.get("id", Double.class).longValue();
         String name = claims.get("name", String.class);
-        RoleType role = claims.get("role", RoleType.class);
+        RoleType role = RoleType.valueOf(claims.get("role", String.class));
 
         return new LoginMember(id, name, role);
     }
