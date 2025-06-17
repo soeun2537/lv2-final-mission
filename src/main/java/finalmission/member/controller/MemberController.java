@@ -8,6 +8,7 @@ import finalmission.member.dto.response.MemberResponse;
 import finalmission.member.entity.RoleType;
 import finalmission.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -89,9 +90,9 @@ public class MemberController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
-    @GetMapping("/me")
+    @GetMapping("/mine")
     public ResponseEntity<MemberResponse> findMine(
-            @AuthenticationPrincipal LoginMember loginMember
+            @Parameter(hidden = true) @AuthenticationPrincipal LoginMember loginMember
     ) {
         MemberResponse response = memberService.findMemberById(loginMember.id());
         return ResponseEntity.ok().body(response);
@@ -127,10 +128,10 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    @DeleteMapping("/me")
+    @DeleteMapping("/mine")
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
     public ResponseEntity<Void> deleteMine(
-            @AuthenticationPrincipal LoginMember loginMember
+            @Parameter(hidden = true) @AuthenticationPrincipal LoginMember loginMember
     ) {
         memberService.deleteMember(loginMember.id());
         return ResponseEntity.noContent().build();

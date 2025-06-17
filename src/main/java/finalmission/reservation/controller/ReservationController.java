@@ -9,6 +9,7 @@ import finalmission.reservation.dto.request.ReservationUpdateRequest;
 import finalmission.reservation.dto.response.ReservationResponse;
 import finalmission.reservation.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -65,7 +66,7 @@ public class ReservationController {
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
     @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponse>> findAllMyReservations(
-            @AuthenticationPrincipal LoginMember loginMember
+            @Parameter(hidden = true) @AuthenticationPrincipal LoginMember loginMember
     ) {
         List<ReservationResponse> responses = reservationService.findAllMyReservation(loginMember.id());
         return ResponseEntity.ok().body(responses);
@@ -79,7 +80,7 @@ public class ReservationController {
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReservation(
             @PathVariable("id") Long id,
-            @AuthenticationPrincipal LoginMember loginMember,
+            @Parameter(hidden = true) @AuthenticationPrincipal LoginMember loginMember,
             @RequestBody @Valid ReservationUpdateRequest request
     ) {
         reservationService.updateReservation(id, loginMember.id(), request);
@@ -94,7 +95,7 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable("id") Long id,
-            @AuthenticationPrincipal LoginMember loginMember
+            @Parameter(hidden = true) @AuthenticationPrincipal LoginMember loginMember
     ) {
         reservationService.deleteReservation(id, loginMember.id());
         return ResponseEntity.noContent().build();
