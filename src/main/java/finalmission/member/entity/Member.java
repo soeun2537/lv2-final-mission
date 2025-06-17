@@ -23,6 +23,8 @@ public class Member {
 
     private String name;
 
+    private String nickname;
+
     private String email;
 
     private String password;
@@ -30,8 +32,8 @@ public class Member {
     @Enumerated(value = EnumType.STRING)
     private RoleType role;
 
-    public Member(String name, String email, String password, RoleType role) {
-        this(null, name, email, password, role);
+    public Member(String name, String nickname, String email, String password, RoleType role) {
+        this(null, name, nickname, email, password, role);
     }
 
     public void promoteToAdmin() {

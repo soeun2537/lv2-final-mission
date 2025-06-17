@@ -43,6 +43,18 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "어드민 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    @PostMapping("/admin")
+    public ResponseEntity<MemberResponse> createMemberAsAdmin(
+            MemberRequest request
+    ) {
+        MemberResponse response = memberService.createMemberAsAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @Operation(summary = "모든 멤버 조회 (어드민 권한)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),

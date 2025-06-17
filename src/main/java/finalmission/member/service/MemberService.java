@@ -27,10 +27,27 @@ public class MemberService {
         String randomName = randomNameService.getRandomName();
 
         Member member = new Member(
+                request.name(),
                 randomName,
                 request.email(),
                 request.password(),
                 RoleType.USER
+        );
+        Member saved = memberRepository.save(member);
+
+        return MemberResponse.from(saved);
+    }
+
+    @Transactional
+    public MemberResponse createMemberAsAdmin(MemberRequest request) {
+        validateDuplicatedEmail(request.email());
+
+        Member member = new Member(
+                request.name(),
+                request.name(),
+                request.email(),
+                request.password(),
+                RoleType.ADMIN
         );
         Member saved = memberRepository.save(member);
 
