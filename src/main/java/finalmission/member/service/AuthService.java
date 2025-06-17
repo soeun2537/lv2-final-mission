@@ -23,7 +23,7 @@ public class AuthService {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 멤버입니다."));
 
-        validatePassword(request, member);
+        validatePassword(member, request.password());
 
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
         String token = jwtUtil.createToken(loginMember);
@@ -31,8 +31,8 @@ public class AuthService {
         return LoginResponse.from(token);
     }
 
-    private void validatePassword(LoginRequest request, Member member) {
-        if (member.matchesPassword(request.password())) {
+    private void validatePassword(Member member, String password) {
+        if (!member.matchesPassword(password)) {
             throw new BadRequestException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
     }
