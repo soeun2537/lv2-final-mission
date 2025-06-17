@@ -10,7 +10,9 @@ import finalmission.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,9 +38,10 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
+    @SecurityRequirements(value = {})
     @PostMapping
     public ResponseEntity<MemberResponse> createMember(
-            MemberRequest request
+            @RequestBody @Valid MemberRequest request
     ) {
         MemberResponse response = memberService.createMember(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -47,9 +51,10 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
+    @SecurityRequirements(value = {})
     @PostMapping("/admin")
     public ResponseEntity<MemberResponse> createMemberAsAdmin(
-            MemberRequest request
+            @RequestBody @Valid MemberRequest request
     ) {
         MemberResponse response = memberService.createMemberAsAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -59,8 +64,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    @GetMapping
     @RoleRequired(roleType = RoleType.ADMIN)
+    @GetMapping
     public ResponseEntity<List<MemberResponse>> findAllMembers() {
         List<MemberResponse> responses = memberService.findAllMembers();
         return ResponseEntity.ok().body(responses);
@@ -70,8 +75,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    @GetMapping("/{id}")
     @RoleRequired(roleType = RoleType.ADMIN)
+    @GetMapping("/{id}")
     public ResponseEntity<MemberResponse> findMemberById(
             @PathVariable("id") Long id
     ) {
@@ -83,8 +88,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    @GetMapping("/me")
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @GetMapping("/me")
     public ResponseEntity<MemberResponse> findMine(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
@@ -96,8 +101,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    @PatchMapping("/admin")
     @RoleRequired(roleType = RoleType.ADMIN)
+    @PatchMapping("/admin")
     public ResponseEntity<Void> promoteToAdmin(
             Long id
     ) {
@@ -109,8 +114,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    @DeleteMapping("/{id}")
     @RoleRequired(roleType = RoleType.ADMIN)
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMemberById(
             @PathVariable("id") Long id
     ) {

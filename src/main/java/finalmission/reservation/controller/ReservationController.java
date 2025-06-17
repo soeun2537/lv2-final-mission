@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,10 +38,10 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    @PostMapping
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            ReservationCreateRequest request
+            @RequestBody @Valid ReservationCreateRequest request
     ) {
         ReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -50,8 +51,8 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    @GetMapping
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAllReservations() {
         List<ReservationResponse> responses = reservationService.findAllReservations();
         return ResponseEntity.ok().body(responses);
@@ -61,8 +62,8 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    @GetMapping("/mine")
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @GetMapping("/mine")
     public ResponseEntity<List<ReservationResponse>> findAllMyReservations(
             @AuthenticationPrincipal LoginMember loginMember
     ) {
@@ -74,12 +75,12 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    @PatchMapping("/{id}")
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReservation(
             @PathVariable("id") Long id,
             @AuthenticationPrincipal LoginMember loginMember,
-            @RequestBody ReservationUpdateRequest request
+            @RequestBody @Valid ReservationUpdateRequest request
     ) {
         reservationService.updateReservation(id, loginMember.id(), request);
         return ResponseEntity.noContent().build();
@@ -89,8 +90,8 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    @DeleteMapping("/{id}")
     @RoleRequired(roleType = {RoleType.USER, RoleType.ADMIN})
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(
             @PathVariable("id") Long id,
             @AuthenticationPrincipal LoginMember loginMember
